@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Smart Booker</title>
+  </head>
+  <body>
+    <h2>Book Appointment</h2>
+    <form id="bookingForm">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="date" name="date" required />
+      <input type="time" name="time" required />
+      <button type="submit">Book</button>
+    </form>
+
+    <h2>All Bookings</h2>
+    <ul id="bookingList"></ul>
+
+    <script>
+      const form = document.getElementById("bookingForm");
+      const list = document.getElementById("bookingList");
+
+      // The fetch URL is now relative, which is better practice.
+      const API_URL = "/api/bookings";
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = {
+          name: form.name.value,
+          date: form.date.value,
+          time: form.time.value,
+        };
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        form.reset();
+        loadBookings();
+      });
+
+      async function loadBookings() {
+        try {
+          const res = await fetch(API_URL);
+          const data = await res.json();
+          if (!Array.isArray(data)) {
+            list.innerHTML = `<li>Error loading bookings</li>`;
+            return;
+          }
+          list.innerHTML = data
+            .map((b) => `<li>${b.name} - ${b.date} ${b.time}</li>`)
+            .join("");
+        } catch (err) {
+          list.innerHTML = `<li>Server error</li>`;
+          console.error("Failed to fetch:", err);
+        }
+      }
+
+      // Load bookings when the page loads
+      loadBookings();
+    </script>
+  </body>
+</html>
