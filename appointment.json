@@ -1,0 +1,27 @@
+[
+    {
+      "id": 1,
+      "name": "John Doe",
+      "symptoms": "Fever, Cough",
+      "date": "2025-07-27",
+      "severity": "Moderate",
+      "status": "Pending"
+    },
+    {
+      "id": 2,
+      "name": "Alice Smith",
+      "symptoms": "Headache",
+      "date": "2025-07-28",
+      "severity": "High",
+      "status": "Pending"
+    },
+    {
+      "id": 3,
+      "name": "Bob Johnson",
+      "symptoms": "Back pain",
+      "date": "2025-07-29",
+      "severity": "Low",
+      "status": "Accepted"
+    }
+  ]
+  

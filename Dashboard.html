@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - MediCare</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            min-height: calc(100vh - 40px);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #1e40af 100%);
+            min-height: 100%;
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .doctor-profile {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            padding: 1rem 2rem !important;
+            border-radius: 0 25px 25px 0 !important;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 2rem;
+            background: #f8fafc;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .status-confirmed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-custom {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-accept {
+            background: linear-gradient(45deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject {
+            background: linear-gradient(45deg, var(--danger-color), #dc2626);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .search-box {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .filter-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .filter-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--secondary-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .appointment-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="dashboard-container">
+            <div class="row g-0 h-100">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2">
+                    <div class="sidebar">
+                        <div class="doctor-profile">
+                            <div class="doctor-avatar">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h5 class="text-white mb-1">Dr. Sarah Johnson</h5>
+                            <small class="text-white-50">Cardiologist</small>
+                        </div>
+                        
+                        <nav class="nav flex-column mt-4">
+                            <a class="nav-link active" href="#" data-section="dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                            <a class="nav-link" href="#" data-section="appointments">
+                                <i class="fas fa-calendar-check me-2"></i> Appointments
+                            </a>
+                            <a class="nav-link" href="#" data-section="patients">
+                                <i class="fas fa-users me-2"></i> Patients
+                            </a>
+                            <a class="nav-link" href="#" data-section="schedule">
+                                <i class="fas fa-clock me-2"></i> Schedule
+                            </a>
+                            <a class="nav-link" href="#" data-section="settings">
+                                <i class="fas fa-cog me-2"></i> Settings
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10">
+                    <div class="main-content">
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="mb-1">Dashboard</h2>
+                                <p class="text-muted">Welcome back, Dr. Johnson</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-bell text-muted fs-5"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">3</span>
+                                </div>
+                                <button class="btn btn-primary btn-custom" onclick="refreshData()">
+                                    <i class="fas fa-sync-alt me-2"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card">
+                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <h3 class="mb-1" id="todayAppointments">0</h3>
+                                    <p class="text-muted mb-0">Today's Appointments</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card">
+                                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <h3 class="mb-1" id="pendingAppointments">0</h3>
+                                    <p class="text-muted mb-0">Pending Requests</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card">
+                                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h3 class="mb-1" id="confirmedAppointments">0</h3>
+                                    <p class="text-muted mb-0">Confirmed</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card">
+                                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h3 class="mb-1" id="totalPatients">0</h3>
+                                    <p class="text-muted mb-0">Total Patients</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search and Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control search-box" placeholder="Search appointments..." id="searchInput">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="filter-tabs d-flex justify-content-end">
+                                    <button class="filter-tab active" data-filter="all">All</button>
+                                    <button class="filter-tab" data-filter="pending">Pending</button>
+                                    <button class="filter-tab" data-filter="confirmed">Confirmed</button>
+                                    <button class="filter-tab" data-filter="rejected">Rejected</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appointments List -->
+                        <div class="appointments-container">
+                            <h4 class="mb-3">Recent Appointments</h4>
+                            <div id="appointmentsList">
+                                <!-- Appointments will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mock Data - In real application, this would come from your backend/database
+        let appointments = [
+            {
+                id: 1,
+                patientName: "John Smith",
+                email: "john.smith@email.com",
+                phone: "+1 234 567 8901",
+                date: "2024-01-15",
+                time: "09:00 AM",
+                reason: "Regular Checkup",
+                status: "pending",
+                urgency: "normal",
+                notes: "Patient reports chest pain occasionally"
+            },
+            {
+                id: 2,
+                patientName: "Emily Johnson",
+                email: "emily.j@email.com",
+                phone: "+1 234 567 8902",
+                date: "2024-01-15",
+                time: "10:30 AM",
+                reason: "Follow-up Consultation",
+                status: "confirmed",
+                urgency: "high",
+                notes: "Post-surgery follow-up required"
+            },
+            {
+                id: 3,
+                patientName: "Michael Brown",
+                email: "m.brown@email.com",
+                phone: "+1 234 567 8903",
+                date: "2024-01-15",
+                time: "02:00 PM",
+                reason: "Cardiac Screening",
+                status: "pending",
+                urgency: "urgent",
+                notes: "Family history of heart disease"
+            },
+            {
+                id: 4,
+                patientName: "Sarah Davis",
+                email: "sarah.davis@email.com",
+                phone: "+1 234 567 8904",
+                date: "2024-01-16",
+                time: "11:00 AM",
+                reason: "Blood Pressure Check",
+                status: "confirmed",
+                urgency: "normal",
+                notes: "Regular monitoring appointment"
+            },
+            {
+                id: 5,
+                patientName: "Robert Wilson",
+                email: "r.wilson@email.com",
+                phone: "+1 234 567 8905",
+                date: "2024-01-16",
+                time: "03:30 PM",
+                reason: "ECG Test",
+                status: "rejected",
+                urgency: "normal",
+                notes: "Rescheduled due to equipment maintenance"
+            }
+        ];
+
+        // State management
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let isLoading = false;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderAppointments();
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchTerm = e.target.value.toLowerCase();
+                renderAppointments();
+            });
+
+            // Filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderAppointments();
+                });
+            });
+
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppointments = appointments.filter(apt => apt.date === today).length;
+            const pending = appointments.filter(apt => apt.status === 'pending').length;
+            const confirmed = appointments.filter(apt => apt.status === 'confirmed').length;
+            const totalPatients = appointments.length;
+
+            // Animate counter updates
+            animateCounter('todayAppointments', todayAppointments);
+            animateCounter('pendingAppointments', pending);
+            animateCounter('confirmedAppointments', confirmed);
+            animateCounter('totalPatients', totalPatients);
+        }
+
+        // Animate counter
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent) || 0;
+            const increment = targetValue > currentValue ? 1 : -1;
+            let current = currentValue;
+
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current;
+                
+                if (current === targetValue) {
+                    clearInterval(timer);
+                    element.parentElement.classList.add('pulse');
+                    setTimeout(() => element.parentElement.classList.remove('pulse'), 1000);
+                }
+            }, 50);
+        }
+
+        // Filter appointments
+        function getFilteredAppointments() {
+            let filtered = appointments;
+
+            // Apply status filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(apt => apt.status === currentFilter);
+            }
+
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(apt => 
+                    apt.patientName.toLowerCase().includes(searchTerm) ||
+                    apt.email.toLowerCase().includes(searchTerm) ||
+                    apt.reason.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Sort by date and urgency
+            filtered.sort((a, b) => {
+                const urgencyOrder = { 'urgent': 3, 'high': 2, 'normal': 1 };
+                if (a.date !== b.date) {
+                    return new Date(a.date) - new Date(b.date);
+                }
+                return urgencyOrder[b.urgency] - urgencyOrder[a.urgency];
+            });
+
+            return filtered;
+        }
+
+        // Render appointments
+        function renderAppointments() {
+            const container = document.getElementById('appointmentsList');
+            const filtered = getFilteredAppointments();
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times text-muted fs-1 mb-3"></i>
+                        <h5 class="text-muted">No appointments found</h5>
+                        <p class="text-muted">Try adjusting your search or filter criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(appointment => `
+                <div class="appointment-card fade-in" data-id="${appointment.id}">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user text-primary"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">${appointment.patientName}</h6>
+                                    <div class="d-flex align-items-center gap-3 text-muted">
+                                        <small><i class="fas fa-envelope me-1"></i> ${appointment.email}</small>
+                                        <small><i class="fas fa-phone me-1"></i> ${appointment.phone}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row text-sm">
+                                <div class="col-md-6">
+                                    <small class="text-muted"><i class="fas fa-calendar me-1"></i> ${formatDate(appointment.date)}</small><br>
+                                    <small class="text-muted"><i class="fas fa-clock me-1"></i> ${appointment.time}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted"><i class="fas fa-stethoscope me-1"></i> ${appointment.reason}</small><br>
+                                    <small class="text-muted"><i class="fas fa-exclamation-triangle me-1"></i> ${appointment.urgency.toUpperCase()}</small>
+                                </div>
+                            </div>
+                            ${appointment.notes ? `<small class="text-muted mt-2 d-block"><i class="fas fa-sticky-note me-1"></i> ${appointment.notes}</small>` : ''}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                <span class="status-badge status-${appointment.status}">
+                                    ${appointment.status}
+                                </span>
+                            </div>
+                            ${appointment.status === 'pending' ? `
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-accept btn-custom btn-sm" onclick="updateAppointmentStatus(${appointment.id}, 'confirmed')">
+                                        <i class="fas fa-check me-1"></i> Accept
+                                    </button>
+                                    <button class="btn btn-reject btn-custom btn-sm" onclick="updateAppointmentStatus(${appointment.id}, 'rejected')">
+                                        <i class="fas fa-times me-1"></i> Reject
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update appointment status
+        function updateAppointmentStatus(appointmentId, newStatus) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const appointment = appointments.find(apt => apt.id === appointmentId);
+            
+            if (!appointment) {
+                isLoading = false;
+                return;
+            }
+
+            // Show loading state
+            const card = document.querySelector(`[data-id="${appointmentId}"]`);
+            const buttons = card.querySelectorAll('.btn-custom');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading-spinner me-2"></div> Processing...';
+            });
+
+            // Simulate API call
+            setTimeout(() => {
+                appointment.status = newStatus;
+                
+                // Show success notification
+                showNotification(`Appointment ${newStatus} successfully!`, 'success');
+                
+                // Update UI
+                updateStats();
+                renderAppointments();
+                
+                // Log action (in real app, this would be sent to backend)
+                console.log(`Appointment ${appointmentId} status updated to ${newStatus}`, {
+                    appointmentId,
+                    newStatus,
+                    timestamp: new Date().toISOString(),
+                    doctorId: 'dr_sarah_johnson'
+                });
+                
+                isLoading = false;
+            }, 1500);
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Tomorrow';
+            } else {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+        }
+
+        // Refresh data
+        function refreshData() {
+            const refreshBtn = document.querySelector('[onclick="refreshData()"]');
+            const icon = refreshBtn.querySelector('i');
+            
+            icon.style.animation = 'spin 1s linear infinite';
+            refreshBtn.disabled = true;
+
+            // Simulate data refresh
+            setTimeout(() => {
+                updateStats();
+                renderAppointments();
+                showNotification('Data refreshed successfully!', 'success');
+                
+                icon.style.animation = '';
+                refreshBtn.disabled = false;
+            }, 1000);
+        }
+
+        // Mock function to simulate adding new appointment (for testing)
+        function addMockAppointment() {
+            const newAppointment = {
+                id: Date.now(),
+                patientName: "Test Patient",
+                email: "test@email.com",
+                phone: "+1 234 567 8900",
+                date: new Date().toISOString().split('T')[0],
+                time: "04:00 PM",
+                reason: "Test Consultation",
+                status: "pending",
+            }
+        }
