@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-100">
+
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">Doctor Dashboard</h1>
+
+    <!-- Filters -->
+    <div class="flex justify-center gap-4 mb-6">
+      <input type="date" id="filterDate" class="p-2 border rounded-md" />
+      <select id="filterSeverity" class="p-2 border rounded-md">
+        <option value="">All Severities</option>
+        <option value="Low">Low</option>
+        <option value="Moderate">Moderate</option>
+        <option value="High">High</option>
+      </select>
+      <button onclick="applyFilters()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Filter</button>
+    </div>
+
+    <!-- Pending Appointments -->
+    <div>
+      <h2 class="text-xl font-semibold mb-3">Pending Appointments</h2>
+      <div id="appointments" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Accepted/Rejected Tabs -->
+    <div class="mt-8">
+      <div class="flex gap-4 justify-center mb-4">
+        <button onclick="showTab('accepted')" class="tab-btn bg-green-500 text-white px-4 py-2 rounded">Accepted</button>
+        <button onclick="showTab('rejected')" class="tab-btn bg-red-500 text-white px-4 py-2 rounded">Rejected</button>
+      </div>
+      <div id="accepted" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+      <div id="rejected" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 hidden"></div>
+    </div>
+  </div>
+
+  <script src="doctor.js"></script>
+</body>
+</html>
+
+    
+
+    <!-- Pending Appointments -->
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">📅 Pending Appointments</h2>
+    <div id="appointments" class="flex flex-wrap gap-4 mb-8"></div>
+
+    <!-- History Tabs -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">📜Appointment History</h2>
+      <div class="flex gap-4 mb-4">
+        <button class="bg-green-100 text-green-800 px-3 py-1 rounded" onclick="showSection('accepted')">Accepted</button>
+        <button class="bg-red-100 text-red-800 px-3 py-1 rounded" onclick="showSection('rejected')">Rejected</button>
+      </div>
+
+      <div id="accepted" class="flex flex-wrap gap-4"></div>
+      <div id="rejected" class="flex flex-wrap gap-4"></div>
+    </div>
+  </div>
+
+  <script src="doctor.js"></script>
+</body>
+</html>
